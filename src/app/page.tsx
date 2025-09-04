@@ -173,7 +173,7 @@ export default function Home() {
     const matchesSearch = venue.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCity = selectedCity === 'All Cities' || venue.city === selectedCity;
     const matchesVenueType = selectedVenueType === 'All Types' || venue.venueType === selectedVenueType;
-    const matchesCapacity = !capacityFilter || venue.capacity >= parseInt(capacityFilter);
+    const matchesCapacity = !capacityFilter || (venue.capacity && venue.capacity >= parseInt(capacityFilter));
     
     return matchesSearch && matchesCity && matchesVenueType && matchesCapacity;
   });
