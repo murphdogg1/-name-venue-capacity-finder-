@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Search, MapPin, Users, Star, Filter, RefreshCw, Music, Calendar } from 'lucide-react';
 import VenueModal from './components/VenueModal';
+import ErrorBoundary from './components/ErrorBoundary';
 import { fetchOSMVenues, searchOSMVenues, OSMVenue } from './lib/osmService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -156,6 +157,12 @@ export default function Home() {
   const [osmVenues, setOsmVenues] = useState<OSMVenue[]>([]);
   const [isLoadingOSM, setIsLoadingOSM] = useState(false);
   const [useOSMData, setUseOSMData] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set client flag after hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Load OSM venues when city changes
   useEffect(() => {
@@ -216,8 +223,21 @@ export default function Home() {
     setSelectedVenue(null);
   };
 
+  // Show loading state during hydration
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading Music Venue Finder...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -464,6 +484,7 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
