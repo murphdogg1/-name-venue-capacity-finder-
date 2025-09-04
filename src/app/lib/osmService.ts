@@ -60,8 +60,8 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
     // Transform OSM data to our venue format
     const venues: OSMVenue[] = data.elements
       .slice(0, limit)
-      .map((element: Record<string, any>, index: number) => {
-        const tags = element.tags || {};
+      .map((element: Record<string, unknown>, index: number) => {
+        const tags = (element.tags as Record<string, string>) || {};
         const name = tags.name || `Venue ${index + 1}`;
         const city = tags['addr:city'] || city;
         const state = tags['addr:state'];
@@ -163,15 +163,16 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
     const data = await response.json();
     
     const venues: OSMVenue[] = data
-      .filter((item: Record<string, any>) => 
-        item.display_name.toLowerCase().includes('music') ||
-        item.display_name.toLowerCase().includes('concert') ||
-        item.display_name.toLowerCase().includes('club') ||
-        item.display_name.toLowerCase().includes('theatre') ||
-        item.display_name.toLowerCase().includes('hall')
-      )
-      .map((item: Record<string, any>, index: number) => {
-        const address = item.address || {};
+      .filter((item: Record<string, unknown>) => {
+        const displayName = (item.display_name as string) || '';
+        return displayName.toLowerCase().includes('music') ||
+          displayName.toLowerCase().includes('concert') ||
+          displayName.toLowerCase().includes('club') ||
+          displayName.toLowerCase().includes('theatre') ||
+          displayName.toLowerCase().includes('hall');
+      })
+      .map((item: Record<string, unknown>, index: number) => {
+        const address = (item.address as Record<string, string>) || {};
         const city = address.city || address.town || address.village || 'Unknown';
         const state = address.state;
         const country = address.country || 'USA';
