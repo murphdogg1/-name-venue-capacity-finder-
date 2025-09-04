@@ -63,7 +63,7 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
       .map((element: Record<string, unknown>, index: number) => {
         const tags = (element.tags as Record<string, string>) || {};
         const name = tags.name || `Venue ${index + 1}`;
-        const city = tags['addr:city'] || city;
+        const city = tags['addr:city'] || 'Unknown';
         const state = tags['addr:state'];
         const country = tags['addr:country'] || 'USA';
         
