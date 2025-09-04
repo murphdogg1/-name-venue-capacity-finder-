@@ -179,9 +179,10 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
         const country = address.country || 'USA';
         
         let venueType = 'Music Venue';
-        if (item.display_name.toLowerCase().includes('club')) venueType = 'Club';
-        else if (item.display_name.toLowerCase().includes('theatre')) venueType = 'Theatre';
-        else if (item.display_name.toLowerCase().includes('hall')) venueType = 'Concert Hall';
+        const displayName = (item.display_name as string) || '';
+        if (displayName.toLowerCase().includes('club')) venueType = 'Club';
+        else if (displayName.toLowerCase().includes('theatre')) venueType = 'Theatre';
+        else if (displayName.toLowerCase().includes('hall')) venueType = 'Concert Hall';
 
         const capacity = venueType === 'Club' ? 300 : venueType === 'Theatre' ? 800 : 1200;
         const amenities = ['Sound System', 'Lighting', 'Bar'];
@@ -190,7 +191,7 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
 
         return {
           id: (item.place_id as number) || Date.now() + index,
-          name: (item.display_name as string).split(',')[0],
+          name: displayName.split(',')[0],
           city,
           state,
           country,
@@ -198,7 +199,7 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
           venueType,
           lat: parseFloat(item.lat as string),
           lon: parseFloat(item.lon as string),
-          address: item.display_name,
+          address: displayName,
           amenities,
           image: `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop&sig=${index}`,
           rating: 4.0 + Math.random() * 1.0,
