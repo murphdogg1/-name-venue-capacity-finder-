@@ -1,4 +1,5 @@
 // OpenStreetMap service for fetching real venue data
+// Production build ready with TypeScript compliance
 export interface OSMVenue {
   id: number;
   name: string;
