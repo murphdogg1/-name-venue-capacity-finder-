@@ -7,14 +7,15 @@ interface Venue {
   id: number;
   name: string;
   city: string;
-  capacity: number;
-  price: string;
-  rating: number;
-  image: string;
+  country: string;
+  capacity?: number;
+  price?: string;
+  rating?: number;
+  image?: string;
   amenities: string[];
   venueType: string;
-  stageSize: string;
-  loadIn: string;
+  stageSize?: string;
+  loadIn?: string;
   address?: string;
   phone?: string;
   website?: string;
@@ -48,14 +49,14 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
           {/* Image */}
           <div className="h-64 bg-gray-200 rounded-lg mb-6 relative overflow-hidden">
             <Image
-              src={venue.image}
+              src={venue.image || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop"}
               alt={venue.name}
               fill
               className="object-cover"
             />
             <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full flex items-center space-x-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="text-sm font-medium">{venue.rating}</span>
+              <span className="text-sm font-medium">{venue.rating || 4.0}</span>
             </div>
           </div>
 
@@ -70,19 +71,19 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Users className="w-4 h-4 mr-2" />
-                  <span>Capacity: {venue.capacity.toLocaleString()}</span>
+                  <span>Capacity: {venue.capacity ? venue.capacity.toLocaleString() : 'Contact for details'}</span>
                 </div>
                 <div className="text-sm text-gray-600">
                   <span className="font-medium">Type:</span> {venue.venueType}
                 </div>
                 <div className="text-sm text-gray-600">
-                  <span className="font-medium">Stage Size:</span> {venue.stageSize}
+                  <span className="font-medium">Stage Size:</span> {venue.stageSize || 'Contact for details'}
                 </div>
                 <div className="text-sm text-gray-600">
-                  <span className="font-medium">Load-in:</span> {venue.loadIn}
+                  <span className="font-medium">Load-in:</span> {venue.loadIn || 'Contact for details'}
                 </div>
                 <div className="text-2xl font-bold text-blue-600 mt-3">
-                  {venue.price}
+                  {venue.price || 'Contact for pricing'}
                 </div>
               </div>
             </div>
@@ -106,9 +107,9 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">About This Music Venue</h3>
             <p className="text-gray-600 leading-relaxed">
-              {venue.name} is a {venue.venueType.toLowerCase()} located in {venue.city} with a capacity of {venue.capacity.toLocaleString()}. 
-              This venue offers a {venue.capacity > 5000 ? 'large-scale' : venue.capacity > 1000 ? 'mid-size' : 'intimate'} setting perfect for {venue.capacity > 5000 ? 'major concerts and festivals' : venue.capacity > 1000 ? 'concerts and live performances' : 'club shows and intimate performances'}. 
-              The {venue.stageSize} stage provides ample space for your artists, and the {venue.loadIn} load-in access makes setup convenient for your crew.
+              {venue.name} is a {venue.venueType.toLowerCase()} located in {venue.city} with a capacity of {venue.capacity ? venue.capacity.toLocaleString() : 'various sizes'}. 
+              This venue offers a {venue.capacity && venue.capacity > 5000 ? 'large-scale' : venue.capacity && venue.capacity > 1000 ? 'mid-size' : 'intimate'} setting perfect for {venue.capacity && venue.capacity > 5000 ? 'major concerts and festivals' : venue.capacity && venue.capacity > 1000 ? 'concerts and live performances' : 'club shows and intimate performances'}. 
+              The {venue.stageSize || 'professional'} stage provides ample space for your artists, and the {venue.loadIn || 'convenient'} load-in access makes setup convenient for your crew.
             </p>
           </div>
 

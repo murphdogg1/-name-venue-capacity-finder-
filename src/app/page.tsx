@@ -12,11 +12,12 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Music venue data for band agents
-const musicVenues = [
+const musicVenues: OSMVenue[] = [
   {
     id: 1,
     name: "The Fillmore",
     city: "San Francisco",
+    country: "USA",
     capacity: 1200,
     price: "$8,500",
     rating: 4.9,
@@ -24,12 +25,15 @@ const musicVenues = [
     amenities: ["Professional Sound", "Lighting Rig", "Green Room", "Merch Table", "Bar"],
     venueType: "Concert Hall",
     stageSize: "40' x 20'",
-    loadIn: "Street level"
+    loadIn: "Street level",
+    lat: 37.7849,
+    lon: -122.4094
   },
   {
     id: 2,
     name: "Red Rocks Amphitheatre",
     city: "Denver",
+    country: "USA",
     capacity: 9525,
     price: "$25,000",
     rating: 4.8,
@@ -37,12 +41,15 @@ const musicVenues = [
     amenities: ["Natural Acoustics", "Mountain Views", "VIP Areas", "Food Trucks", "Parking"],
     venueType: "Outdoor Amphitheatre",
     stageSize: "60' x 40'",
-    loadIn: "Truck access"
+    loadIn: "Truck access",
+    lat: 39.6653,
+    lon: -105.2056
   },
   {
     id: 3,
     name: "The Troubadour",
     city: "Los Angeles",
+    country: "USA",
     capacity: 500,
     price: "$3,200",
     rating: 4.7,
@@ -50,12 +57,15 @@ const musicVenues = [
     amenities: ["Intimate Setting", "Historic Venue", "Sound System", "Bar", "Green Room"],
     venueType: "Club",
     stageSize: "20' x 15'",
-    loadIn: "Alley access"
+    loadIn: "Alley access",
+    lat: 34.0736,
+    lon: -118.4004
   },
   {
     id: 4,
     name: "Madison Square Garden",
     city: "New York",
+    country: "USA",
     capacity: 20789,
     price: "$150,000",
     rating: 4.9,
@@ -63,12 +73,15 @@ const musicVenues = [
     amenities: ["World-Class Sound", "Full Production", "VIP Suites", "Catering", "Security"],
     venueType: "Arena",
     stageSize: "80' x 60'",
-    loadIn: "Loading dock"
+    loadIn: "Loading dock",
+    lat: 40.7505,
+    lon: -73.9934
   },
   {
     id: 5,
     name: "The Roxy Theatre",
     city: "Los Angeles",
+    country: "USA",
     capacity: 400,
     price: "$2,800",
     rating: 4.6,
@@ -76,12 +89,15 @@ const musicVenues = [
     amenities: ["Professional Lighting", "Sound System", "Bar", "Dressing Room", "Merch Area"],
     venueType: "Theatre",
     stageSize: "25' x 18'",
-    loadIn: "Street level"
+    loadIn: "Street level",
+    lat: 34.0908,
+    lon: -118.3856
   },
   {
     id: 6,
     name: "House of Blues",
     city: "Chicago",
+    country: "USA",
     capacity: 1000,
     price: "$5,500",
     rating: 4.5,
@@ -89,12 +105,15 @@ const musicVenues = [
     amenities: ["Full Production", "Restaurant", "VIP Lounge", "Sound System", "Parking"],
     venueType: "Music Hall",
     stageSize: "30' x 20'",
-    loadIn: "Loading dock"
+    loadIn: "Loading dock",
+    lat: 41.8781,
+    lon: -87.6298
   },
   {
     id: 7,
     name: "The Bowery Ballroom",
     city: "New York",
+    country: "USA",
     capacity: 575,
     price: "$4,200",
     rating: 4.8,
@@ -102,12 +121,15 @@ const musicVenues = [
     amenities: ["Intimate Venue", "Great Acoustics", "Bar", "Green Room", "Merch Table"],
     venueType: "Ballroom",
     stageSize: "22' x 16'",
-    loadIn: "Street level"
+    loadIn: "Street level",
+    lat: 40.7505,
+    lon: -73.9934
   },
   {
     id: 8,
     name: "The Gorge Amphitheatre",
     city: "George, WA",
+    country: "USA",
     capacity: 27500,
     price: "$45,000",
     rating: 4.9,
@@ -115,7 +137,9 @@ const musicVenues = [
     amenities: ["Stunning Views", "Full Production", "Camping", "Food Vendors", "VIP Areas"],
     venueType: "Outdoor Amphitheatre",
     stageSize: "70' x 50'",
-    loadIn: "Truck access"
+    loadIn: "Truck access",
+    lat: 47.0834,
+    lon: -119.9706
   }
 ];
 
@@ -353,21 +377,21 @@ export default function Home() {
               <Card key={venue.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-48 bg-gray-200 relative">
                   <Image
-                    src={venue.image}
+                    src={venue.image || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop"}
                     alt={venue.name}
                     fill
                     className="object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium">{venue.rating}</span>
+                    <span className="text-sm font-medium">{venue.rating || 4.0}</span>
                   </div>
                 </div>
                 
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-xl">{venue.name}</CardTitle>
-                    <span className="text-lg font-bold text-blue-600">{venue.price}</span>
+                    <span className="text-lg font-bold text-blue-600">{venue.price || 'Contact for pricing'}</span>
                   </div>
                   <CardDescription className="flex items-center text-gray-600">
                     <MapPin className="w-4 h-4 mr-1" />
@@ -378,10 +402,10 @@ export default function Home() {
                 <CardContent>
                   <div className="flex items-center text-gray-600 mb-2">
                     <Users className="w-4 h-4 mr-1" />
-                    <span>Capacity: {venue.capacity.toLocaleString()}</span>
+                    <span>Capacity: {venue.capacity ? venue.capacity.toLocaleString() : 'Contact for details'}</span>
                   </div>
                   <div className="text-sm text-gray-500 mb-4">
-                    <span className="font-medium">{venue.venueType}</span> • Stage: {venue.stageSize}
+                    <span className="font-medium">{venue.venueType}</span> • Stage: {venue.stageSize || 'Contact for details'}
                   </div>
                   
                   <div className="flex flex-wrap gap-2 mb-4">
