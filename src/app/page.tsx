@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import { Music } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Simple venue interface
 interface SimpleVenue {
@@ -81,27 +85,27 @@ export default function Home() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Search Venues
                 </label>
-                <input
+                <Input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by venue name..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Filter by City
                 </label>
-                <select
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {cities.map(city => (
-                    <option key={city} value={city}>{city}</option>
-                  ))}
-                </select>
+                <Select value={selectedCity} onValueChange={setSelectedCity}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cities.map(city => (
+                      <SelectItem key={city} value={city}>{city}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -110,16 +114,20 @@ export default function Home() {
         {/* Venues Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredVenues.map((venue) => (
-            <div
+            <Card
               key={venue.id}
               onClick={() => handleVenueClick(venue)}
-              className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer"
+              className="hover:shadow-md transition-shadow cursor-pointer"
             >
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{venue.name}</h3>
-              <p className="text-gray-600 mb-2">{venue.city}</p>
-              <p className="text-sm text-gray-500">Capacity: {venue.capacity.toLocaleString()}</p>
-              <p className="text-sm text-gray-500">Type: {venue.venueType}</p>
-            </div>
+              <CardHeader>
+                <CardTitle className="text-xl">{venue.name}</CardTitle>
+                <CardDescription>{venue.city}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-500">Capacity: {venue.capacity.toLocaleString()}</p>
+                <p className="text-sm text-gray-500">Type: {venue.venueType}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
@@ -131,12 +139,12 @@ export default function Home() {
               <p className="text-gray-600 mb-2">City: {selectedVenue.city}</p>
               <p className="text-gray-600 mb-2">Capacity: {selectedVenue.capacity.toLocaleString()}</p>
               <p className="text-gray-600 mb-4">Type: {selectedVenue.venueType}</p>
-              <button
+              <Button
                 onClick={() => setSelectedVenue(null)}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+                className="w-full"
               >
                 Close
-              </button>
+              </Button>
             </div>
           </div>
         )}
