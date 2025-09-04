@@ -127,7 +127,7 @@ export default function Home() {
   const [selectedCity, setSelectedCity] = useState('All Cities');
   const [selectedVenueType, setSelectedVenueType] = useState('All Types');
   const [capacityFilter, setCapacityFilter] = useState('');
-  const [selectedVenue, setSelectedVenue] = useState(null);
+  const [selectedVenue, setSelectedVenue] = useState<OSMVenue | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [osmVenues, setOsmVenues] = useState<OSMVenue[]>([]);
   const [isLoadingOSM, setIsLoadingOSM] = useState(false);
