@@ -171,6 +171,8 @@ export default function Home() {
       setOsmVenues(venues);
     } catch (error) {
       console.error('Error loading OSM venues:', error);
+      // Set empty array on error to prevent crashes
+      setOsmVenues([]);
     } finally {
       setIsLoadingOSM(false);
     }
@@ -185,6 +187,8 @@ export default function Home() {
         setUseOSMData(true);
       } catch (error) {
         console.error('Error searching OSM venues:', error);
+        // Set empty array on error to prevent crashes
+        setOsmVenues([]);
       } finally {
         setIsLoadingOSM(false);
       }

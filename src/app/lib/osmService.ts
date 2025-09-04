@@ -26,6 +26,12 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
   try {
     console.log('Fetching OSM venues for city:', city);
     
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') {
+      console.log('Server-side rendering, returning empty array');
+      return [];
+    }
+    
     // Simplified Overpass API query for music venues
     const overpassQuery = `
       [out:json][timeout:25];
@@ -152,6 +158,11 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
 
 export async function searchOSMVenues(query: string, limit: number = 20): Promise<OSMVenue[]> {
   try {
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') {
+      console.log('Server-side rendering, returning empty array');
+      return [];
+    }
     // Use Nominatim API for search
     const searchQuery = encodeURIComponent(`${query} music venue concert hall club`);
     const response = await fetch(
