@@ -1,0 +1,159 @@
+'use client';
+
+import { X, MapPin, Users, Star, Phone, Mail, Calendar } from 'lucide-react';
+
+interface Venue {
+  id: number;
+  name: string;
+  city: string;
+  capacity: number;
+  price: string;
+  rating: number;
+  image: string;
+  amenities: string[];
+  venueType: string;
+  stageSize: string;
+  loadIn: string;
+  address?: string;
+  phone?: string;
+  website?: string;
+  lat?: number;
+  lon?: number;
+}
+
+interface VenueModalProps {
+  venue: Venue | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) {
+  if (!isOpen || !venue) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900">{venue.name}</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {/* Image */}
+          <div className="h-64 bg-gray-200 rounded-lg mb-6 relative overflow-hidden">
+            <img
+              src={venue.image}
+              alt={venue.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full flex items-center space-x-1">
+              <Star className="w-4 h-4 text-yellow-400 fill-current" />
+              <span className="text-sm font-medium">{venue.rating}</span>
+            </div>
+          </div>
+
+          {/* Basic Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Venue Details</h3>
+              <div className="space-y-2">
+                <div className="flex items-center text-gray-600">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  <span>{venue.address || venue.city}</span>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Users className="w-4 h-4 mr-2" />
+                  <span>Capacity: {venue.capacity.toLocaleString()}</span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium">Type:</span> {venue.venueType}
+                </div>
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium">Stage Size:</span> {venue.stageSize}
+                </div>
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium">Load-in:</span> {venue.loadIn}
+                </div>
+                <div className="text-2xl font-bold text-blue-600 mt-3">
+                  {venue.price}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Amenities</h3>
+              <div className="flex flex-wrap gap-2">
+                {venue.amenities.map((amenity, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                  >
+                    {amenity}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">About This Music Venue</h3>
+            <p className="text-gray-600 leading-relaxed">
+              {venue.name} is a {venue.venueType.toLowerCase()} located in {venue.city} with a capacity of {venue.capacity.toLocaleString()}. 
+              This venue offers a {venue.capacity > 5000 ? 'large-scale' : venue.capacity > 1000 ? 'mid-size' : 'intimate'} setting perfect for {venue.capacity > 5000 ? 'major concerts and festivals' : venue.capacity > 1000 ? 'concerts and live performances' : 'club shows and intimate performances'}. 
+              The {venue.stageSize} stage provides ample space for your artists, and the {venue.loadIn} load-in access makes setup convenient for your crew.
+            </p>
+          </div>
+
+          {/* Contact & Booking */}
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact & Booking</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {venue.phone && (
+                <a 
+                  href={`tel:${venue.phone}`}
+                  className="flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>Call {venue.phone}</span>
+                </a>
+              )}
+              {venue.website && (
+                <a 
+                  href={venue.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>Visit Website</span>
+                </a>
+              )}
+              {venue.lat && venue.lon && (
+                <a 
+                  href={`https://www.google.com/maps?q=${venue.lat},${venue.lon}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center space-x-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors md:col-span-2"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>View on Map</span>
+                </a>
+              )}
+              {!venue.phone && !venue.website && !venue.lat && (
+                <div className="md:col-span-2 text-center text-gray-500 py-4">
+                  Contact information not available for this venue
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
