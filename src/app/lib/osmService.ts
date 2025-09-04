@@ -60,7 +60,7 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
     // Transform OSM data to our venue format
     const venues: OSMVenue[] = data.elements
       .slice(0, limit)
-      .map((element: any, index: number) => {
+      .map((element: Record<string, any>, index: number) => {
         const tags = element.tags || {};
         const name = tags.name || `Venue ${index + 1}`;
         const city = tags['addr:city'] || city;
@@ -163,14 +163,14 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
     const data = await response.json();
     
     const venues: OSMVenue[] = data
-      .filter((item: any) => 
+      .filter((item: Record<string, any>) => 
         item.display_name.toLowerCase().includes('music') ||
         item.display_name.toLowerCase().includes('concert') ||
         item.display_name.toLowerCase().includes('club') ||
         item.display_name.toLowerCase().includes('theatre') ||
         item.display_name.toLowerCase().includes('hall')
       )
-      .map((item: any, index: number) => {
+      .map((item: Record<string, any>, index: number) => {
         const address = item.address || {};
         const city = address.city || address.town || address.village || 'Unknown';
         const state = address.state;

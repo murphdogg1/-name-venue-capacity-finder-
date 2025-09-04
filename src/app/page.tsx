@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, MapPin, Users, Star, Filter, RefreshCw, Music, Calendar, Phone } from 'lucide-react';
+import Image from 'next/image';
+import { Search, MapPin, Users, Star, Filter, RefreshCw, Music, Calendar } from 'lucide-react';
 import VenueModal from './components/VenueModal';
 import { fetchOSMVenues, searchOSMVenues, OSMVenue } from './lib/osmService';
 import { Button } from '@/components/ui/button';
@@ -177,7 +178,7 @@ export default function Home() {
     return matchesSearch && matchesCity && matchesVenueType && matchesCapacity;
   });
 
-  const handleVenueClick = (venue: any) => {
+  const handleVenueClick = (venue: OSMVenue) => {
     setSelectedVenue(venue);
     setIsModalOpen(true);
   };
@@ -351,10 +352,11 @@ export default function Home() {
             {filteredVenues.map((venue) => (
               <Card key={venue.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-48 bg-gray-200 relative">
-                  <img
+                  <Image
                     src={venue.image}
                     alt={venue.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -417,7 +419,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-4">MusicVenueFinder</h3>
-            <p className="text-gray-400 mb-6">Find the perfect music venue for your artists' next performance</p>
+            <p className="text-gray-400 mb-6">Find the perfect music venue for your artists&apos; next performance</p>
             <div className="flex justify-center space-x-6">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">About</a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a>

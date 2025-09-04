@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { X, MapPin, Users, Star, Phone, Mail, Calendar } from 'lucide-react';
 
 interface Venue {
@@ -46,10 +47,11 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
         <div className="p-6">
           {/* Image */}
           <div className="h-64 bg-gray-200 rounded-lg mb-6 relative overflow-hidden">
-            <img
+            <Image
               src={venue.image}
               alt={venue.name}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
             <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full flex items-center space-x-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
