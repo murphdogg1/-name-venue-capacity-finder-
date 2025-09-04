@@ -99,15 +99,15 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
         else if (capacity > 200) price = '$2,000';
 
         return {
-          id: element.id || Date.now() + index,
+          id: (element.id as number) || Date.now() + index,
           name,
           city,
           state,
           country,
           capacity,
           venueType,
-          lat: element.lat || (element.center && element.center.lat) || 0,
-          lon: element.lon || (element.center && element.center.lon) || 0,
+          lat: (element.lat as number) || ((element.center as Record<string, number>)?.lat) || 0,
+          lon: (element.lon as number) || ((element.center as Record<string, number>)?.lon) || 0,
           address: tags['addr:full'] || `${tags['addr:street'] || ''}, ${city}`,
           phone: tags.phone,
           website: tags.website,
@@ -188,15 +188,15 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
         if (venueType === 'Club') amenities.push('Dance Floor', 'DJ Booth');
 
         return {
-          id: item.place_id || Date.now() + index,
-          name: item.display_name.split(',')[0],
+          id: (item.place_id as number) || Date.now() + index,
+          name: (item.display_name as string).split(',')[0],
           city,
           state,
           country,
           capacity,
           venueType,
-          lat: parseFloat(item.lat),
-          lon: parseFloat(item.lon),
+          lat: parseFloat(item.lat as string),
+          lon: parseFloat(item.lon as string),
           address: item.display_name,
           amenities,
           image: `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop&sig=${index}`,
