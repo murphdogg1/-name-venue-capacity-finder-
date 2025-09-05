@@ -38,20 +38,39 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+
   return (
     <div 
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
       onClick={handleBackdropClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
     >
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div 
+        className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">{venue.name}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Back to Search
+            </button>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         <div className="p-6">
@@ -163,12 +182,18 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
               {/* Map Button - always shows */}
               <button 
                 onClick={() => {
+                  console.log('View on Map button clicked for:', venue.name);
+                  console.log('Venue coordinates:', venue.lat, venue.lon);
                   if (venue.lat && venue.lon) {
-                    window.open(`https://www.google.com/maps?q=${venue.lat},${venue.lon}`, '_blank', 'noopener,noreferrer');
+                    const mapUrl = `https://www.google.com/maps?q=${venue.lat},${venue.lon}`;
+                    console.log('Opening map with coordinates:', mapUrl);
+                    window.open(mapUrl, '_blank', 'noopener,noreferrer');
                   } else {
                     // Fallback: search for venue location
                     const searchQuery = `${venue.name} ${venue.city} location`;
-                    window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
+                    const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
+                    console.log('Opening map search:', searchUrl);
+                    window.open(searchUrl, '_blank');
                   }
                 }}
                 className="flex items-center justify-center space-x-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors"
@@ -180,8 +205,10 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
               {/* Contact Button - always shows */}
               <button 
                 onClick={() => {
+                  console.log('Contact Venue button clicked for:', venue.name);
                   const emailSubject = `Booking Inquiry - ${venue.name}`;
                   const emailBody = `Hello,\n\nI am interested in booking ${venue.name} for a music performance.\n\nVenue Details:\n- Name: ${venue.name}\n- City: ${venue.city}\n- Capacity: ${venue.capacity ? venue.capacity.toLocaleString() : 'Various'}\n- Venue Type: ${venue.venueType}\n\nPlease contact me to discuss availability and pricing.\n\nThank you!`;
+                  console.log('Opening email with subject:', emailSubject);
                   window.open(`mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`);
                 }}
                 className="flex items-center justify-center space-x-2 bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors"
@@ -190,6 +217,16 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
                 <span>Contact Venue</span>
               </button>
             </div>
+          </div>
+          
+          {/* Footer with close button */}
+          <div className="border-t pt-4 mt-6">
+            <button
+              onClick={onClose}
+              className="w-full py-3 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+            >
+              Close & Return to Search
+            </button>
           </div>
         </div>
       </div>
