@@ -56,7 +56,7 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
             />
             <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full flex items-center space-x-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="text-sm font-medium">{venue.rating || 4.0}</span>
+              <span className="text-sm font-medium">{(venue.rating || 4.0).toFixed(1)}</span>
             </div>
           </div>
 

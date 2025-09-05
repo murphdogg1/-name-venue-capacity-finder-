@@ -118,7 +118,7 @@ const musicVenues: Venue[] = [
     capacity: 1000,
     price: "$5,500",
     rating: 4.5,
-    image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
     amenities: ["Full Production", "Restaurant", "VIP Lounge", "Sound System", "Parking"],
     venueType: "Music Hall",
     stageSize: "30' x 20'",
@@ -308,7 +308,7 @@ export default function Home() {
     capacity: osmVenue.capacity || 500,
     price: osmVenue.price || 'Contact for pricing',
     rating: osmVenue.rating || 4.0,
-    image: osmVenue.image || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop',
+    image: osmVenue.image || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
     amenities: osmVenue.amenities,
     venueType: osmVenue.venueType,
     stageSize: osmVenue.stageSize || 'Contact for details',
@@ -523,7 +523,7 @@ export default function Home() {
                 />
                 <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
                   <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-sm font-medium">{venue.rating}</span>
+                  <span className="text-sm font-medium">{venue.rating.toFixed(1)}</span>
                 </div>
               </div>
               
