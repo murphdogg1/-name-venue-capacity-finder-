@@ -22,7 +22,7 @@ export interface OSMVenue {
   loadIn?: string;
 }
 
-export async function fetchOSMVenues(city: string, limit: number = 20): Promise<OSMVenue[]> {
+export async function fetchOSMVenues(city: string, limit: number = 100): Promise<OSMVenue[]> {
   try {
     console.log('Fetching OSM venues for city:', city);
     
@@ -52,30 +52,33 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
     const cityLon = parseFloat(geocodeData[0].lon);
     console.log('City coordinates:', cityLat, cityLon);
     
-    // Comprehensive search for music venues within 25km of the city center
+    // Comprehensive search for music venues within 30km of the city center
     const overpassQuery = `
-      [out:json][timeout:30];
+      [out:json][timeout:45];
       (
-        // Music venues and concert halls
-        node["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall)$"]["name"](around:25000,${cityLat},${cityLon});
-        node["leisure"~"^(nightclub|dance|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        node["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        node["tourism"~"^(theatre|attraction|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        node["sport"~"^(stadium|arena)$"]["name"](around:25000,${cityLat},${cityLon});
+        // All amenity types that could host music events
+        node["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall|community_centre|social_centre|club|casino)$"]["name"](around:30000,${cityLat},${cityLon});
+        node["leisure"~"^(nightclub|dance|music_venue|entertainment_centre)$"]["name"](around:30000,${cityLat},${cityLon});
+        node["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue|entertainment|cultural)$"]["name"](around:30000,${cityLat},${cityLon});
+        node["tourism"~"^(theatre|attraction|music_venue|museum|gallery)$"]["name"](around:30000,${cityLat},${cityLon});
+        node["sport"~"^(stadium|arena|sports_centre)$"]["name"](around:30000,${cityLat},${cityLon});
+        node["shop"~"^(music|entertainment)$"]["name"](around:30000,${cityLat},${cityLon});
         
-        // Ways (buildings/areas)
-        way["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall)$"]["name"](around:25000,${cityLat},${cityLon});
-        way["leisure"~"^(nightclub|dance|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        way["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        way["tourism"~"^(theatre|attraction|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        way["sport"~"^(stadium|arena)$"]["name"](around:25000,${cityLat},${cityLon});
+        // Ways (buildings/areas) - same comprehensive search
+        way["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall|community_centre|social_centre|club|casino)$"]["name"](around:30000,${cityLat},${cityLon});
+        way["leisure"~"^(nightclub|dance|music_venue|entertainment_centre)$"]["name"](around:30000,${cityLat},${cityLon});
+        way["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue|entertainment|cultural)$"]["name"](around:30000,${cityLat},${cityLon});
+        way["tourism"~"^(theatre|attraction|music_venue|museum|gallery)$"]["name"](around:30000,${cityLat},${cityLon});
+        way["sport"~"^(stadium|arena|sports_centre)$"]["name"](around:30000,${cityLat},${cityLon});
+        way["shop"~"^(music|entertainment)$"]["name"](around:30000,${cityLat},${cityLon});
         
         // Relations (complex venues)
-        relation["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall)$"]["name"](around:25000,${cityLat},${cityLon});
-        relation["leisure"~"^(nightclub|dance|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        relation["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        relation["tourism"~"^(theatre|attraction|music_venue)$"]["name"](around:25000,${cityLat},${cityLon});
-        relation["sport"~"^(stadium|arena)$"]["name"](around:25000,${cityLat},${cityLon});
+        relation["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall|community_centre|social_centre|club|casino)$"]["name"](around:30000,${cityLat},${cityLon});
+        relation["leisure"~"^(nightclub|dance|music_venue|entertainment_centre)$"]["name"](around:30000,${cityLat},${cityLon});
+        relation["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue|entertainment|cultural)$"]["name"](around:30000,${cityLat},${cityLon});
+        relation["tourism"~"^(theatre|attraction|music_venue|museum|gallery)$"]["name"](around:30000,${cityLat},${cityLon});
+        relation["sport"~"^(stadium|arena|sports_centre)$"]["name"](around:30000,${cityLat},${cityLon});
+        relation["shop"~"^(music|entertainment)$"]["name"](around:30000,${cityLat},${cityLon});
       );
       out center;
     `;
@@ -99,18 +102,24 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
     const data = await response.json();
     console.log('OSM data received:', data);
     
-    // If still no results, try a broader search
+    // If still no results, try a much broader search
     if (!data.elements || data.elements.length === 0) {
       console.log('No results with location search, trying broader search...');
       const simpleQuery = `
-        [out:json][timeout:30];
+        [out:json][timeout:45];
         (
-          node["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall)$"]["name"](around:50000,${cityLat},${cityLon});
-          node["leisure"~"^(nightclub|dance|music_venue)$"]["name"](around:50000,${cityLat},${cityLon});
-          node["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue)$"]["name"](around:50000,${cityLat},${cityLon});
-          node["sport"~"^(stadium|arena)$"]["name"](around:50000,${cityLat},${cityLon});
-          way["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall)$"]["name"](around:50000,${cityLat},${cityLon});
-          way["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue)$"]["name"](around:50000,${cityLat},${cityLon});
+          node["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall|community_centre|social_centre|club|casino)$"]["name"](around:50000,${cityLat},${cityLon});
+          node["leisure"~"^(nightclub|dance|music_venue|entertainment_centre)$"]["name"](around:50000,${cityLat},${cityLon});
+          node["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue|entertainment|cultural)$"]["name"](around:50000,${cityLat},${cityLon});
+          node["tourism"~"^(theatre|attraction|music_venue|museum|gallery)$"]["name"](around:50000,${cityLat},${cityLon});
+          node["sport"~"^(stadium|arena|sports_centre)$"]["name"](around:50000,${cityLat},${cityLon});
+          node["shop"~"^(music|entertainment)$"]["name"](around:50000,${cityLat},${cityLon});
+          way["amenity"~"^(nightclub|bar|pub|restaurant|theatre|arts_centre|music_venue|concert_hall|community_centre|social_centre|club|casino)$"]["name"](around:50000,${cityLat},${cityLon});
+          way["leisure"~"^(nightclub|dance|music_venue|entertainment_centre)$"]["name"](around:50000,${cityLat},${cityLon});
+          way["building"~"^(theatre|concert_hall|auditorium|stadium|arena|music_venue|entertainment|cultural)$"]["name"](around:50000,${cityLat},${cityLon});
+          way["tourism"~"^(theatre|attraction|music_venue|museum|gallery)$"]["name"](around:50000,${cityLat},${cityLon});
+          way["sport"~"^(stadium|arena|sports_centre)$"]["name"](around:50000,${cityLat},${cityLon});
+          way["shop"~"^(music|entertainment)$"]["name"](around:50000,${cityLat},${cityLon});
         );
         out center;
       `;
@@ -127,6 +136,36 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
         const simpleData = await simpleResponse.json();
         console.log('Simple search results:', simpleData);
         data.elements = simpleData.elements || [];
+      }
+    }
+    
+    // If still no results, try searching for any venue with music-related keywords
+    if (!data.elements || data.elements.length === 0) {
+      console.log('Still no results, trying keyword-based search...');
+      const keywordQuery = `
+        [out:json][timeout:45];
+        (
+          node["name"~"^(?i).*(music|concert|venue|hall|theatre|theater|club|bar|pub|live|stage|auditorium|arena|stadium).*$"]["name"](around:50000,${cityLat},${cityLon});
+          way["name"~"^(?i).*(music|concert|venue|hall|theatre|theater|club|bar|pub|live|stage|auditorium|arena|stadium).*$"]["name"](around:50000,${cityLat},${cityLon});
+          relation["name"~"^(?i).*(music|concert|venue|hall|theatre|theater|club|bar|pub|live|stage|auditorium|arena|stadium).*$"]["name"](around:50000,${cityLat},${cityLon});
+        );
+        out center;
+      `;
+      
+      const keywordResponse = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `data=${encodeURIComponent(keywordQuery)}`,
+      });
+      
+      if (keywordResponse.ok) {
+        const keywordData = await keywordResponse.json();
+        console.log('Keyword search data received:', keywordData);
+        if (keywordData.elements && keywordData.elements.length > 0) {
+          data.elements = keywordData.elements;
+        }
       }
     }
     

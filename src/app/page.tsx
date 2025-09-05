@@ -230,7 +230,7 @@ export default function Home() {
     console.log('Loading OSM venues for city:', city);
     setIsLoadingOSM(true);
     try {
-      const venues = await fetchOSMVenues(city, 15);
+      const venues = await fetchOSMVenues(city, 50);
       console.log('OSM venues received:', venues);
       setOsmVenues(venues);
     } catch (error) {
@@ -252,9 +252,9 @@ export default function Home() {
       
       try {
         const [nycVenues, laVenues, chicagoVenues] = await Promise.all([
-          fetchOSMVenues('New York', 3),
-          fetchOSMVenues('Los Angeles', 3),
-          fetchOSMVenues('Chicago', 3)
+          fetchOSMVenues('New York', 20),
+          fetchOSMVenues('Los Angeles', 20),
+          fetchOSMVenues('Chicago', 20)
         ]);
         
         allVenues = [...nycVenues, ...laVenues, ...chicagoVenues];
