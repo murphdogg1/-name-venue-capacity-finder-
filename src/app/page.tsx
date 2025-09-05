@@ -165,12 +165,41 @@ export default function Home() {
     }
   }, [isClient]);
 
-  // Load OSM venues when city changes
-  useEffect(() => {
-    if (selectedCity !== 'All Cities' && useOSMData && isClient) {
-      loadOSMVenues(selectedCity);
+  const loadDefaultOSMVenues = useCallback(async () => {
+    if (!isClient) return;
+    
+    console.log('Loading default OSM venues');
+    setIsLoadingOSM(true);
+    try {
+      // Load venues from major cities
+      const [nycVenues, laVenues, chicagoVenues] = await Promise.all([
+        fetchOSMVenues('New York', 5),
+        fetchOSMVenues('Los Angeles', 5),
+        fetchOSMVenues('Chicago', 5)
+      ]);
+      
+      const allVenues = [...nycVenues, ...laVenues, ...chicagoVenues];
+      console.log('Default OSM venues received:', allVenues);
+      setOsmVenues(allVenues);
+    } catch (error) {
+      console.error('Error loading default OSM venues:', error);
+      setOsmVenues([]);
+    } finally {
+      setIsLoadingOSM(false);
     }
-  }, [selectedCity, useOSMData, isClient, loadOSMVenues]);
+  }, [isClient]);
+
+  // Load OSM venues when city changes or when switching to OSM mode
+  useEffect(() => {
+    if (useOSMData && isClient) {
+      if (selectedCity !== 'All Cities') {
+        loadOSMVenues(selectedCity);
+      } else {
+        // Load some default venues when OSM mode is selected but no city chosen
+        loadDefaultOSMVenues();
+      }
+    }
+  }, [selectedCity, useOSMData, isClient, loadOSMVenues, loadDefaultOSMVenues]);
 
   const handleSearchOSM = async () => {
     if (!isClient || !searchTerm.trim()) return;
