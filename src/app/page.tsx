@@ -323,6 +323,7 @@ export default function Home() {
     : musicVenues;
   
   console.log('Current state:', { useOSMData, osmVenuesLength: osmVenues.length, currentVenuesLength: currentVenues.length });
+  // Force rebuild to test component resolution
 
   const filteredVenues = currentVenues.filter(venue => {
     const matchesSearch = venue.name.toLowerCase().includes(searchTerm.toLowerCase());
