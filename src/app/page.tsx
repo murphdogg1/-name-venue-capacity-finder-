@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { Search, MapPin, Users, Star, Music, Calendar, RefreshCw } from 'lucide-react';
+import { Search, MapPin, Users, Star, Music, Calendar, RefreshCw, Download } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -28,6 +28,7 @@ interface Venue {
   lon: number;
   phone?: string;
   website?: string;
+  address?: string;
 }
 
 // Sample music venue data
@@ -140,8 +141,71 @@ const musicVenues: Venue[] = [
   }
 ];
 
-const cities = ["All Cities", "New York", "Los Angeles", "San Francisco", "Chicago", "Denver"];
+const cities = [
+  "All Cities", "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", 
+  "San Antonio", "San Diego", "Dallas", "San Jose", "Austin", "Jacksonville", "Fort Worth", 
+  "Columbus", "Charlotte", "San Francisco", "Indianapolis", "Seattle", "Denver", "Washington", 
+  "Boston", "El Paso", "Nashville", "Detroit", "Oklahoma City", "Portland", "Las Vegas", 
+  "Memphis", "Louisville", "Baltimore", "Milwaukee", "Albuquerque", "Tucson", "Fresno", 
+  "Sacramento", "Mesa", "Kansas City", "Atlanta", "Long Beach", "Colorado Springs", "Raleigh", 
+  "Miami", "Virginia Beach", "Omaha", "Oakland", "Minneapolis", "Tulsa", "Arlington", "Tampa"
+];
 const venueTypes = ["All Types", "Concert Hall", "Arena", "Club", "Theatre", "Music Hall", "Outdoor Amphitheatre"];
+
+// CSV Export functions
+function generateCSV(venues: Venue[]): string {
+  const headers = [
+    'Name',
+    'City',
+    'Country',
+    'Capacity',
+    'Price',
+    'Rating',
+    'Venue Type',
+    'Stage Size',
+    'Load In',
+    'Phone',
+    'Website',
+    'Address',
+    'Latitude',
+    'Longitude',
+    'Amenities'
+  ];
+  
+  const rows = venues.map(venue => [
+    venue.name,
+    venue.city,
+    venue.country,
+    venue.capacity || 'N/A',
+    venue.price || 'Contact for pricing',
+    venue.rating || 'N/A',
+    venue.venueType,
+    venue.stageSize || 'Contact for details',
+    venue.loadIn || 'Contact for details',
+    venue.phone || 'N/A',
+    venue.website || 'N/A',
+    venue.address || `${venue.city}, ${venue.country}`,
+    venue.lat,
+    venue.lon,
+    venue.amenities.join('; ')
+  ]);
+  
+  return [headers, ...rows].map(row => 
+    row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(',')
+  ).join('\n');
+}
+
+function downloadCSV(csvContent: string, filename: string): void {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -513,12 +577,28 @@ export default function Home() {
             <h3 className="text-lg font-semibold text-gray-900">
               {filteredVenues.length} Venues Found
             </h3>
-            {isLoadingOSM && (
-              <div className="flex items-center text-blue-600">
-                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                <span className="text-sm">Loading from OpenStreetMap...</span>
-              </div>
-            )}
+            <div className="flex items-center space-x-4">
+              {isLoadingOSM && (
+                <div className="flex items-center text-blue-600">
+                  <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                  <span className="text-sm">Loading from OpenStreetMap...</span>
+                </div>
+              )}
+              {filteredVenues.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const csvContent = generateCSV(filteredVenues);
+                    downloadCSV(csvContent, `venues-${selectedCity.toLowerCase().replace(' ', '-')}.csv`);
+                  }}
+                  className="flex items-center space-x-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Export CSV</span>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
