@@ -101,6 +101,7 @@ export async function fetchOSMVenues(city: string, limit: number = 100): Promise
 
     const data = await response.json();
     console.log('OSM data received:', data);
+    console.log('Number of elements found:', data.elements ? data.elements.length : 0);
     
     // If still no results, try a much broader search
     if (!data.elements || data.elements.length === 0) {
@@ -170,6 +171,7 @@ export async function fetchOSMVenues(city: string, limit: number = 100): Promise
     }
     
     // Transform OSM data to our venue format
+    console.log('Transforming', data.elements.length, 'elements, limit:', limit);
     const venues: OSMVenue[] = data.elements
       .slice(0, limit)
       .map((element: Record<string, unknown>, index: number) => {

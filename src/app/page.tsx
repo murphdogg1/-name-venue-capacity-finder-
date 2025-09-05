@@ -421,21 +421,21 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-gray-800 shadow-lg border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
-                <Music className="w-8 h-8 text-blue-600" />
+                <Music className="w-8 h-8 text-blue-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Music Venue Finder</h1>
-                <p className="text-sm text-gray-600">Find the perfect venue for your artists</p>
+                <h1 className="text-2xl font-bold text-white">Music Venue Finder</h1>
+                <p className="text-sm text-gray-300">Find the perfect venue for your artists</p>
               </div>
             </div>
-            <Badge variant="secondary" className="text-sm">
+            <Badge variant="secondary" className="text-sm bg-gray-700 text-gray-200 border-gray-600">
               For Band Agents
             </Badge>
           </div>
@@ -443,10 +443,10 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+      <section className="bg-gradient-to-r from-gray-800 to-gray-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-4">Discover Music Venues</h2>
-          <p className="text-xl mb-8">Find the perfect concert halls, clubs, and arenas for your artists&apos; next performance</p>
+          <p className="text-xl mb-8 text-gray-200">Find the perfect concert halls, clubs, and arenas for your artists&apos; next performance</p>
         </div>
       </section>
 
@@ -454,20 +454,20 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filters */}
         <div className="mb-8">
-          <Card>
+          <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Search className="w-5 h-5 mr-2" />
+              <CardTitle className="flex items-center text-white">
+                <Search className="w-5 h-5 mr-2 text-blue-400" />
                 Search & Filter Venues
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-300">
                 Find venues by name, location, type, and capacity
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Search Venues
                   </label>
                   <div className="flex gap-2">
@@ -522,7 +522,7 @@ export default function Home() {
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Min Capacity
                   </label>
                   <Input
@@ -538,8 +538,8 @@ export default function Home() {
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700">Data Source</h4>
-                    <p className="text-xs text-gray-500">
+                    <h4 className="text-sm font-medium text-gray-300">Data Source</h4>
+                    <p className="text-xs text-gray-400">
                       {useOSMData ? 'Using OpenStreetMap data' : 'Using sample venue data'}
                     </p>
                   </div>
@@ -574,14 +574,14 @@ export default function Home() {
         {/* Results */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-white">
               {filteredVenues.length} Venues Found
             </h3>
             <div className="flex items-center space-x-4">
               {isLoadingOSM && (
-                <div className="flex items-center text-blue-600">
+                <div className="flex items-center text-blue-400">
                   <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                  <span className="text-sm">Loading from OpenStreetMap...</span>
+                  <span className="text-sm text-gray-300">Loading from OpenStreetMap...</span>
                 </div>
               )}
               {filteredVenues.length > 0 && (
