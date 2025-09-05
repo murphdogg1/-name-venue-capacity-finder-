@@ -26,6 +26,8 @@ interface Venue {
   loadIn: string;
   lat: number;
   lon: number;
+  phone?: string;
+  website?: string;
 }
 
 // Sample music venue data
@@ -44,7 +46,9 @@ const musicVenues: Venue[] = [
     stageSize: "40' x 20'",
     loadIn: "Street level",
     lat: 37.7849,
-    lon: -122.4094
+    lon: -122.4094,
+    phone: "+1 (415) 346-6000",
+    website: "https://www.thefillmore.com"
   },
   {
     id: 2,
@@ -60,7 +64,9 @@ const musicVenues: Venue[] = [
     stageSize: "60' x 40'",
     loadIn: "Truck access",
     lat: 39.6653,
-    lon: -105.2056
+    lon: -105.2056,
+    phone: "+1 (720) 865-2494",
+    website: "https://www.redrocksonline.com"
   },
   {
     id: 3,
@@ -76,7 +82,9 @@ const musicVenues: Venue[] = [
     stageSize: "20' x 15'",
     loadIn: "Alley access",
     lat: 34.0736,
-    lon: -118.4004
+    lon: -118.4004,
+    phone: "+1 (310) 276-1155",
+    website: "https://www.troubadour.com"
   },
   {
     id: 4,
@@ -92,7 +100,9 @@ const musicVenues: Venue[] = [
     stageSize: "80' x 60'",
     loadIn: "Loading dock",
     lat: 40.7505,
-    lon: -73.9934
+    lon: -73.9934,
+    phone: "+1 (212) 465-6741",
+    website: "https://www.madisonsquaregarden.com"
   },
   {
     id: 5,
@@ -102,7 +112,7 @@ const musicVenues: Venue[] = [
     capacity: 400,
     price: "$2,800",
     rating: 4.6,
-    image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1558008185-d8e92e79d5a0?w=400&h=300&fit=crop",
     amenities: ["Professional Lighting", "Sound System", "Bar", "Dressing Room", "Merch Area"],
     venueType: "Theatre",
     stageSize: "25' x 18'",
@@ -118,13 +128,15 @@ const musicVenues: Venue[] = [
     capacity: 1000,
     price: "$5,500",
     rating: 4.5,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+    image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop",
     amenities: ["Full Production", "Restaurant", "VIP Lounge", "Sound System", "Parking"],
     venueType: "Music Hall",
     stageSize: "30' x 20'",
     loadIn: "Loading dock",
     lat: 41.8781,
-    lon: -87.6298
+    lon: -87.6298,
+    phone: "+1 (312) 923-2000",
+    website: "https://www.houseofblues.com/chicago"
   }
 ];
 
@@ -215,7 +227,7 @@ export default function Home() {
             lon: -73.9798,
             address: '1260 6th Ave, New York, NY',
             amenities: ['Historic Venue', 'Professional Sound', 'Seating'],
-            image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop',
+            image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400&h=300&fit=crop',
             rating: 4.8,
             price: '$25,000',
             stageSize: '60\' x 40\'',
@@ -249,7 +261,7 @@ export default function Home() {
             lon: -87.6742,
             address: '1901 W Madison St, Chicago, IL',
             amenities: ['World-Class Sound', 'Full Production', 'VIP Areas'],
-            image: 'https://images.unsplash.com/photo-1571266028243-e68f8570c0e5?w=400&h=300&fit=crop',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
             rating: 4.8,
             price: '$200,000',
             stageSize: '100\' x 80\'',
@@ -308,7 +320,7 @@ export default function Home() {
     capacity: osmVenue.capacity || 500,
     price: osmVenue.price || 'Contact for pricing',
     rating: osmVenue.rating || 4.0,
-    image: osmVenue.image || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+    image: osmVenue.image || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop',
     amenities: osmVenue.amenities,
     venueType: osmVenue.venueType,
     stageSize: osmVenue.stageSize || 'Contact for details',

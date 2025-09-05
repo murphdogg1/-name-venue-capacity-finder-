@@ -49,7 +49,7 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
           {/* Image */}
           <div className="h-64 bg-gray-200 rounded-lg mb-6 relative overflow-hidden">
             <Image
-              src={venue.image || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop"}
+              src={venue.image || "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop"}
               alt={venue.name}
               fill
               className="object-cover"
@@ -148,11 +148,18 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
                   <span>View on Map</span>
                 </a>
               )}
-              {!venue.phone && !venue.website && !venue.lat && (
-                <div className="md:col-span-2 text-center text-gray-500 py-4">
-                  Contact information not available for this venue
-                </div>
-              )}
+              {/* Fallback Contact Button - always shows */}
+              <button 
+                onClick={() => {
+                  const emailSubject = `Booking Inquiry - ${venue.name}`;
+                  const emailBody = `Hello,\n\nI am interested in booking ${venue.name} for a music performance.\n\nVenue Details:\n- Name: ${venue.name}\n- City: ${venue.city}\n- Capacity: ${venue.capacity ? venue.capacity.toLocaleString() : 'Various'}\n- Venue Type: ${venue.venueType}\n\nPlease contact me to discuss availability and pricing.\n\nThank you!`;
+                  window.open(`mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`);
+                }}
+                className="flex items-center justify-center space-x-2 bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors"
+              >
+                <Mail className="w-4 h-4" />
+                <span>Contact Venue</span>
+              </button>
             </div>
           </div>
         </div>
