@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { Search, MapPin, Users, Star, Music, Calendar } from 'lucide-react';
+import { Search, MapPin, Users, Star, Music, Calendar, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { fetchOSMVenues, searchOSMVenues, OSMVenue } from './lib/osmService';
 
 // Music venue interface
 interface Venue {
@@ -137,8 +138,78 @@ export default function Home() {
   const [capacityFilter, setCapacityFilter] = useState('');
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [osmVenues, setOsmVenues] = useState<OSMVenue[]>([]);
+  const [isLoadingOSM, setIsLoadingOSM] = useState(false);
+  const [useOSMData, setUseOSMData] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  const filteredVenues = musicVenues.filter(venue => {
+  // Set client flag after hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const loadOSMVenues = useCallback(async (city: string) => {
+    if (!isClient) return;
+    
+    setIsLoadingOSM(true);
+    try {
+      const venues = await fetchOSMVenues(city, 15);
+      setOsmVenues(venues);
+    } catch (error) {
+      console.error('Error loading OSM venues:', error);
+      setOsmVenues([]);
+    } finally {
+      setIsLoadingOSM(false);
+    }
+  }, [isClient]);
+
+  // Load OSM venues when city changes
+  useEffect(() => {
+    if (selectedCity !== 'All Cities' && useOSMData && isClient) {
+      loadOSMVenues(selectedCity);
+    }
+  }, [selectedCity, useOSMData, isClient, loadOSMVenues]);
+
+  const handleSearchOSM = async () => {
+    if (!isClient || !searchTerm.trim()) return;
+    
+    setIsLoadingOSM(true);
+    try {
+      const venues = await searchOSMVenues(searchTerm, 20);
+      setOsmVenues(venues);
+      setUseOSMData(true);
+    } catch (error) {
+      console.error('Error searching OSM venues:', error);
+      setOsmVenues([]);
+    } finally {
+      setIsLoadingOSM(false);
+    }
+  };
+
+  // Convert OSMVenue to Venue for display
+  const convertOSMToVenue = (osmVenue: OSMVenue): Venue => ({
+    id: osmVenue.id,
+    name: osmVenue.name,
+    city: osmVenue.city,
+    country: osmVenue.country,
+    capacity: osmVenue.capacity || 500,
+    price: osmVenue.price || 'Contact for pricing',
+    rating: osmVenue.rating || 4.0,
+    image: osmVenue.image || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop',
+    amenities: osmVenue.amenities,
+    venueType: osmVenue.venueType,
+    stageSize: osmVenue.stageSize || 'Contact for details',
+    loadIn: osmVenue.loadIn || 'Contact for details',
+    lat: osmVenue.lat,
+    lon: osmVenue.lon
+  });
+
+  // Get current venues (OSM or sample data)
+  const currentVenues = useOSMData && osmVenues.length > 0 
+    ? osmVenues.map(convertOSMToVenue)
+    : musicVenues;
+
+  const filteredVenues = currentVenues.filter(venue => {
     const matchesSearch = venue.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCity = selectedCity === 'All Cities' || venue.city === selectedCity;
     const matchesVenueType = selectedVenueType === 'All Types' || venue.venueType === selectedVenueType;
@@ -207,12 +278,26 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Search Venues
                   </label>
-                  <Input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search by venue name..."
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search by venue name..."
+                    />
+                    <Button
+                      onClick={handleSearchOSM}
+                      disabled={isLoadingOSM || !searchTerm.trim()}
+                      size="icon"
+                      variant="outline"
+                    >
+                      {isLoadingOSM ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Search className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -256,15 +341,51 @@ export default function Home() {
                   />
                 </div>
               </div>
+              
+              {/* Data Source Toggle */}
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700">Data Source</h4>
+                    <p className="text-xs text-gray-500">
+                      {useOSMData ? 'Using OpenStreetMap data' : 'Using sample venue data'}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={!useOSMData ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setUseOSMData(false)}
+                    >
+                      Sample Data
+                    </Button>
+                    <Button
+                      variant={useOSMData ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setUseOSMData(true)}
+                    >
+                      OpenStreetMap
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Results */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {filteredVenues.length} Venues Found
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {filteredVenues.length} Venues Found
+            </h3>
+            {isLoadingOSM && (
+              <div className="flex items-center text-blue-600">
+                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                <span className="text-sm">Loading from OpenStreetMap...</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Venues Grid */}
