@@ -151,9 +151,11 @@ export default function Home() {
   const loadOSMVenues = useCallback(async (city: string) => {
     if (!isClient) return;
     
+    console.log('Loading OSM venues for city:', city);
     setIsLoadingOSM(true);
     try {
       const venues = await fetchOSMVenues(city, 15);
+      console.log('OSM venues received:', venues);
       setOsmVenues(venues);
     } catch (error) {
       console.error('Error loading OSM venues:', error);
@@ -205,9 +207,11 @@ export default function Home() {
   });
 
   // Get current venues (OSM or sample data)
-  const currentVenues = useOSMData && osmVenues.length > 0 
-    ? osmVenues.map(convertOSMToVenue)
+  const currentVenues = useOSMData 
+    ? (osmVenues.length > 0 ? osmVenues.map(convertOSMToVenue) : [])
     : musicVenues;
+  
+  console.log('Current state:', { useOSMData, osmVenuesLength: osmVenues.length, currentVenuesLength: currentVenues.length });
 
   const filteredVenues = currentVenues.filter(venue => {
     const matchesSearch = venue.name.toLowerCase().includes(searchTerm.toLowerCase());
