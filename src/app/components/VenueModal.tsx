@@ -32,8 +32,17 @@ interface VenueModalProps {
 export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) {
   if (!isOpen || !venue) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      onClick={handleBackdropClick}
+    >
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">{venue.name}</h2>
@@ -117,38 +126,58 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
           <div className="border-t pt-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact & Booking</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {venue.phone && (
-                <a 
-                  href={`tel:${venue.phone}`}
-                  className="flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>Call {venue.phone}</span>
-                </a>
-              )}
-              {venue.website && (
-                <a 
-                  href={venue.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>Visit Website</span>
-                </a>
-              )}
-              {venue.lat && venue.lon && (
-                <a 
-                  href={`https://www.google.com/maps?q=${venue.lat},${venue.lon}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center space-x-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors md:col-span-2"
-                >
-                  <Calendar className="w-4 h-4" />
-                  <span>View on Map</span>
-                </a>
-              )}
-              {/* Fallback Contact Button - always shows */}
+              {/* Call Button - always shows */}
+              <button 
+                onClick={() => {
+                  if (venue.phone) {
+                    window.location.href = `tel:${venue.phone}`;
+                  } else {
+                    // Fallback: search for venue phone number
+                    const searchQuery = `${venue.name} ${venue.city} phone number`;
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
+                  }
+                }}
+                className="flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                <span>{venue.phone ? `Call ${venue.phone}` : 'Find Phone Number'}</span>
+              </button>
+
+              {/* Website Button - always shows */}
+              <button 
+                onClick={() => {
+                  if (venue.website) {
+                    window.open(venue.website, '_blank', 'noopener,noreferrer');
+                  } else {
+                    // Fallback: search for venue website
+                    const searchQuery = `${venue.name} ${venue.city} official website`;
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
+                  }
+                }}
+                className="flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Mail className="w-4 h-4" />
+                <span>{venue.website ? 'Visit Website' : 'Find Website'}</span>
+              </button>
+
+              {/* Map Button - always shows */}
+              <button 
+                onClick={() => {
+                  if (venue.lat && venue.lon) {
+                    window.open(`https://www.google.com/maps?q=${venue.lat},${venue.lon}`, '_blank', 'noopener,noreferrer');
+                  } else {
+                    // Fallback: search for venue location
+                    const searchQuery = `${venue.name} ${venue.city} location`;
+                    window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`, '_blank');
+                  }
+                }}
+                className="flex items-center justify-center space-x-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Calendar className="w-4 h-4" />
+                <span>View on Map</span>
+              </button>
+
+              {/* Contact Button - always shows */}
               <button 
                 onClick={() => {
                   const emailSubject = `Booking Inquiry - ${venue.name}`;
