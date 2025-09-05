@@ -171,15 +171,94 @@ export default function Home() {
     console.log('Loading default OSM venues');
     setIsLoadingOSM(true);
     try {
-      // Load venues from major cities
-      const [nycVenues, laVenues, chicagoVenues] = await Promise.all([
-        fetchOSMVenues('New York', 5),
-        fetchOSMVenues('Los Angeles', 5),
-        fetchOSMVenues('Chicago', 5)
-      ]);
+      // Try to load venues from major cities, but if that fails, use hardcoded fallbacks
+      let allVenues: OSMVenue[] = [];
       
-      const allVenues = [...nycVenues, ...laVenues, ...chicagoVenues];
-      console.log('Default OSM venues received:', allVenues);
+      try {
+        const [nycVenues, laVenues, chicagoVenues] = await Promise.all([
+          fetchOSMVenues('New York', 3),
+          fetchOSMVenues('Los Angeles', 3),
+          fetchOSMVenues('Chicago', 3)
+        ]);
+        
+        allVenues = [...nycVenues, ...laVenues, ...chicagoVenues];
+        console.log('OSM API venues received:', allVenues);
+      } catch (apiError) {
+        console.log('OSM API failed, using hardcoded fallbacks:', apiError);
+        // Use hardcoded fallback venues
+        allVenues = [
+          {
+            id: 1001,
+            name: 'Madison Square Garden',
+            city: 'New York',
+            country: 'USA',
+            capacity: 20789,
+            venueType: 'Arena',
+            lat: 40.7505,
+            lon: -73.9934,
+            address: '4 Pennsylvania Plaza, New York, NY',
+            amenities: ['World-Class Sound', 'Full Production', 'VIP Suites'],
+            image: 'https://images.unsplash.com/photo-1571266028243-e68f8570c0e5?w=400&h=300&fit=crop',
+            rating: 4.9,
+            price: '$150,000',
+            stageSize: '80\' x 60\'',
+            loadIn: 'Loading dock'
+          },
+          {
+            id: 1002,
+            name: 'Radio City Music Hall',
+            city: 'New York',
+            country: 'USA',
+            capacity: 6010,
+            venueType: 'Concert Hall',
+            lat: 40.7600,
+            lon: -73.9798,
+            address: '1260 6th Ave, New York, NY',
+            amenities: ['Historic Venue', 'Professional Sound', 'Seating'],
+            image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop',
+            rating: 4.8,
+            price: '$25,000',
+            stageSize: '60\' x 40\'',
+            loadIn: 'Loading dock'
+          },
+          {
+            id: 2001,
+            name: 'Hollywood Bowl',
+            city: 'Los Angeles',
+            country: 'USA',
+            capacity: 17500,
+            venueType: 'Outdoor Amphitheatre',
+            lat: 34.1122,
+            lon: -118.3394,
+            address: '2301 N Highland Ave, Los Angeles, CA',
+            amenities: ['Natural Acoustics', 'Mountain Views', 'Food Trucks'],
+            image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop',
+            rating: 4.7,
+            price: '$35,000',
+            stageSize: '70\' x 50\'',
+            loadIn: 'Truck access'
+          },
+          {
+            id: 3001,
+            name: 'United Center',
+            city: 'Chicago',
+            country: 'USA',
+            capacity: 23500,
+            venueType: 'Arena',
+            lat: 41.8807,
+            lon: -87.6742,
+            address: '1901 W Madison St, Chicago, IL',
+            amenities: ['World-Class Sound', 'Full Production', 'VIP Areas'],
+            image: 'https://images.unsplash.com/photo-1571266028243-e68f8570c0e5?w=400&h=300&fit=crop',
+            rating: 4.8,
+            price: '$200,000',
+            stageSize: '100\' x 80\'',
+            loadIn: 'Loading dock'
+          }
+        ];
+      }
+      
+      console.log('Final venues to set:', allVenues);
       setOsmVenues(allVenues);
     } catch (error) {
       console.error('Error loading default OSM venues:', error);
@@ -191,10 +270,13 @@ export default function Home() {
 
   // Load OSM venues when city changes or when switching to OSM mode
   useEffect(() => {
+    console.log('OSM useEffect triggered:', { useOSMData, isClient, selectedCity });
     if (useOSMData && isClient) {
       if (selectedCity !== 'All Cities') {
+        console.log('Loading OSM venues for specific city:', selectedCity);
         loadOSMVenues(selectedCity);
       } else {
+        console.log('Loading default OSM venues');
         // Load some default venues when OSM mode is selected but no city chosen
         loadDefaultOSMVenues();
       }
@@ -388,14 +470,20 @@ export default function Home() {
                     <Button
                       variant={!useOSMData ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setUseOSMData(false)}
+                      onClick={() => {
+                        console.log('Switching to Sample Data');
+                        setUseOSMData(false);
+                      }}
                     >
                       Sample Data
                     </Button>
                     <Button
                       variant={useOSMData ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setUseOSMData(true)}
+                      onClick={() => {
+                        console.log('Switching to OpenStreetMap');
+                        setUseOSMData(true);
+                      }}
                     >
                       OpenStreetMap
                     </Button>
