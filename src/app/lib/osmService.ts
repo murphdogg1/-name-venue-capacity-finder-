@@ -120,7 +120,7 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
       .map((element: Record<string, unknown>, index: number) => {
         const tags = (element.tags as Record<string, string>) || {};
         const name = tags.name || `Venue ${index + 1}`;
-        const city = tags['addr:city'] || 'Unknown';
+        const venueCity = tags['addr:city'] || tags['addr:town'] || tags['addr:suburb'] || city; // Use the search city as fallback
         const state = tags['addr:state'];
         const country = tags['addr:country'] || 'USA';
         
@@ -158,14 +158,14 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
         return {
           id: (element.id as number) || Date.now() + index,
           name,
-          city,
+          city: venueCity,
           state,
           country,
           capacity,
           venueType,
           lat: (element.lat as number) || ((element.center as Record<string, number>)?.lat) || 0,
           lon: (element.lon as number) || ((element.center as Record<string, number>)?.lon) || 0,
-          address: tags['addr:full'] || `${tags['addr:street'] || ''}, ${city}`,
+          address: tags['addr:full'] || `${tags['addr:street'] || ''}, ${venueCity}`,
           phone: tags.phone,
           website: tags.website,
           amenities,
@@ -300,7 +300,7 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
       })
       .map((item: Record<string, unknown>, index: number) => {
         const address = (item.address as Record<string, string>) || {};
-        const city = address.city || address.town || address.village || 'Unknown';
+        const venueCity = address.city || address.town || address.village || 'Unknown';
         const state = address.state;
         const country = address.country || 'USA';
         
@@ -318,7 +318,7 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
         return {
           id: (item.place_id as number) || Date.now() + index,
           name: displayName.split(',')[0],
-          city,
+          city: venueCity,
           state,
           country,
           capacity,

@@ -529,7 +529,10 @@ export default function Home() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <CardTitle className="text-xl">{venue.name}</CardTitle>
-                  <span className="text-lg font-bold text-blue-600">{venue.price}</span>
+                  <div className="text-right">
+                    <div className="text-xs text-gray-500 mb-1">Venue Rental Fee</div>
+                    <span className="text-lg font-bold text-blue-600">{venue.price}</span>
+                  </div>
                 </div>
                 <CardDescription className="flex items-center text-gray-600">
                   <MapPin className="w-4 h-4 mr-1" />
