@@ -364,14 +364,36 @@ export default function Home() {
     
     setIsLoadingOSM(true);
     try {
-      const venues = await searchOSMVenues(searchTerm, 20);
+      const venues = await fetchOSMVenues(searchTerm, 50);
+      console.log(`OSM search for "${searchTerm}" returned ${venues.length} venues`);
       setOsmVenues(venues);
       setUseOSMData(true);
+      setSelectedCity('All Cities'); // Reset city filter when searching
     } catch (error) {
       console.error('Error searching OSM venues:', error);
       setOsmVenues([]);
     } finally {
       setIsLoadingOSM(false);
+    }
+  };
+
+  const handleCityChange = async (city: string) => {
+    console.log('City changed to:', city);
+    setSelectedCity(city);
+    
+    if (city !== 'All Cities' && useOSMData) {
+      console.log('Loading OSM data for city:', city);
+      setIsLoadingOSM(true);
+      try {
+        const venues = await fetchOSMVenues(city, 50);
+        console.log(`OSM data for ${city} returned ${venues.length} venues`);
+        setOsmVenues(venues);
+      } catch (error) {
+        console.error('Error fetching OSM venues for city:', error);
+        setOsmVenues([]);
+      } finally {
+        setIsLoadingOSM(false);
+      }
     }
   };
 
@@ -522,7 +544,7 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     City
                   </label>
-                  <Select value={selectedCity} onValueChange={setSelectedCity}>
+                  <Select value={selectedCity} onValueChange={handleCityChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a city" />
                     </SelectTrigger>
