@@ -398,17 +398,44 @@ export default function Home() {
     ? (osmVenues.length > 0 ? osmVenues.map(convertOSMToVenue) : [])
     : musicVenues;
   
-  console.log('Current state:', { useOSMData, osmVenuesLength: osmVenues.length, currentVenuesLength: currentVenues.length });
+  console.log('Current state:', { 
+    useOSMData, 
+    osmVenuesLength: osmVenues.length, 
+    currentVenuesLength: currentVenues.length,
+    selectedCity,
+    searchTerm,
+    selectedVenueType,
+    capacityFilter
+  });
+  console.log('OSM venues sample:', osmVenues.slice(0, 3));
+  console.log('Current venues sample:', currentVenues.slice(0, 3));
   // Force rebuild to test component resolution
 
   const filteredVenues = currentVenues.filter(venue => {
     const matchesSearch = venue.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCity = selectedCity === 'All Cities' || venue.city === selectedCity;
+    const matchesCity = selectedCity === 'All Cities' || 
+      venue.city === selectedCity || 
+      venue.city?.toLowerCase().includes(selectedCity.toLowerCase()) ||
+      selectedCity.toLowerCase().includes(venue.city?.toLowerCase() || '');
     const matchesVenueType = selectedVenueType === 'All Types' || venue.venueType === selectedVenueType;
     const matchesCapacity = !capacityFilter || venue.capacity >= parseInt(capacityFilter);
     
-    return matchesSearch && matchesCity && matchesVenueType && matchesCapacity;
+    const passes = matchesSearch && matchesCity && matchesVenueType && matchesCapacity;
+    if (!passes && selectedCity !== 'All Cities') {
+      console.log(`Venue ${venue.name} filtered out:`, {
+        matchesSearch,
+        matchesCity,
+        matchesVenueType,
+        matchesCapacity,
+        venueCity: venue.city,
+        selectedCity
+      });
+    }
+    
+    return passes;
   });
+  
+  console.log('Filtered venues count:', filteredVenues.length);
 
   const handleVenueClick = (venue: Venue) => {
     setSelectedVenue(venue);
