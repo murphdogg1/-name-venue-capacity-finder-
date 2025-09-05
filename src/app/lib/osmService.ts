@@ -32,16 +32,22 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
       return [];
     }
     
-    // Simplified Overpass API query for music venues
+    // Improved Overpass API query for music venues
     const overpassQuery = `
       [out:json][timeout:25];
       (
-        node["amenity"~"^(nightclub|bar|pub|restaurant)$"]["name"]["addr:city"="${city}"];
+        node["amenity"~"^(nightclub|bar|pub|restaurant|theatre)$"]["name"]["addr:city"="${city}"];
         node["leisure"~"^(nightclub|dance)$"]["name"]["addr:city"="${city}"];
         node["building"~"^(theatre|concert_hall|auditorium)$"]["name"]["addr:city"="${city}"];
-        way["amenity"~"^(nightclub|bar|pub|restaurant)$"]["name"]["addr:city"="${city}"];
+        node["tourism"~"^(theatre|attraction)$"]["name"]["addr:city"="${city}"];
+        way["amenity"~"^(nightclub|bar|pub|restaurant|theatre)$"]["name"]["addr:city"="${city}"];
         way["leisure"~"^(nightclub|dance)$"]["name"]["addr:city"="${city}"];
         way["building"~"^(theatre|concert_hall|auditorium)$"]["name"]["addr:city"="${city}"];
+        way["tourism"~"^(theatre|attraction)$"]["name"]["addr:city"="${city}"];
+        relation["amenity"~"^(nightclub|bar|pub|restaurant|theatre)$"]["name"]["addr:city"="${city}"];
+        relation["leisure"~"^(nightclub|dance)$"]["name"]["addr:city"="${city}"];
+        relation["building"~"^(theatre|concert_hall|auditorium)$"]["name"]["addr:city"="${city}"];
+        relation["tourism"~"^(theatre|attraction)$"]["name"]["addr:city"="${city}"];
       );
       out center;
     `;
@@ -64,6 +70,39 @@ export async function fetchOSMVenues(city: string, limit: number = 20): Promise<
 
     const data = await response.json();
     console.log('OSM data received:', data);
+    
+    // If no results, try a broader search without city filter
+    if (!data.elements || data.elements.length === 0) {
+      console.log('No results with city filter, trying broader search...');
+      const broaderQuery = `
+        [out:json][timeout:25];
+        (
+          node["amenity"~"^(nightclub|bar|pub|restaurant|theatre)$"]["name"~"${city}",i];
+          node["leisure"~"^(nightclub|dance)$"]["name"~"${city}",i];
+          node["building"~"^(theatre|concert_hall|auditorium)$"]["name"~"${city}",i];
+          node["tourism"~"^(theatre|attraction)$"]["name"~"${city}",i];
+          way["amenity"~"^(nightclub|bar|pub|restaurant|theatre)$"]["name"~"${city}",i];
+          way["leisure"~"^(nightclub|dance)$"]["name"~"${city}",i];
+          way["building"~"^(theatre|concert_hall|auditorium)$"]["name"~"${city}",i];
+          way["tourism"~"^(theatre|attraction)$"]["name"~"${city}",i];
+        );
+        out center;
+      `;
+      
+      const broaderResponse = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `data=${encodeURIComponent(broaderQuery)}`,
+      });
+      
+      if (broaderResponse.ok) {
+        const broaderData = await broaderResponse.json();
+        console.log('Broader search results:', broaderData);
+        data.elements = broaderData.elements || [];
+      }
+    }
     
     // Transform OSM data to our venue format
     const venues: OSMVenue[] = data.elements
