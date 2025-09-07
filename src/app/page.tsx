@@ -405,7 +405,7 @@ export default function Home() {
     country: osmVenue.country,
     capacity: osmVenue.capacity || 500,
     price: osmVenue.price || 'Contact for pricing',
-    rating: osmVenue.rating || 4.0,
+    rating: Math.round((osmVenue.rating || 4.0) * 10) / 10,
     image: osmVenue.image || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop',
     amenities: osmVenue.amenities,
     venueType: osmVenue.venueType,

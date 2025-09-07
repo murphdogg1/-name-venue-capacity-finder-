@@ -227,7 +227,7 @@ export async function fetchOSMVenues(city: string, limit: number = 100): Promise
           website: tags.website,
           amenities,
           image: `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop&sig=${index}`,
-          rating: 4.0 + Math.random() * 1.0, // Random rating between 4.0-5.0
+          rating: Math.round((4.0 + Math.random() * 1.0) * 10) / 10, // Random rating between 4.0-5.0, rounded to 1 decimal
           price,
           stageSize: capacity > 1000 ? '40\' x 30\'' : capacity > 500 ? '30\' x 20\'' : '20\' x 15\'',
           loadIn: capacity > 1000 ? 'Loading dock' : 'Street level'
@@ -385,7 +385,7 @@ export async function searchOSMVenues(query: string, limit: number = 20): Promis
           address: displayName,
           amenities,
           image: `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop&sig=${index}`,
-          rating: 4.0 + Math.random() * 1.0,
+          rating: Math.round((4.0 + Math.random() * 1.0) * 10) / 10,
           price: capacity > 1000 ? '$5,000' : capacity > 500 ? '$3,000' : '$2,000',
           stageSize: capacity > 1000 ? '40\' x 30\'' : '30\' x 20\'',
           loadIn: 'Street level'
