@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { X, MapPin, Users, Star, Phone, Mail, Calendar } from 'lucide-react';
 
@@ -30,9 +31,36 @@ interface VenueModalProps {
 }
 
 export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) {
+  // Handle escape key and click outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Element;
+      if (target && target.classList.contains('modal-backdrop')) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [onClose, isOpen]);
+
   if (!isOpen || !venue) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
+    // Close modal when clicking on the backdrop (not the modal content)
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -46,7 +74,7 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       tabIndex={-1}
@@ -147,13 +175,15 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Call Button - always shows */}
               <button 
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   if (venue.phone) {
                     window.location.href = `tel:${venue.phone}`;
                   } else {
                     // Fallback: search for venue phone number
                     const searchQuery = `${venue.name} ${venue.city} phone number`;
-                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank', 'noopener,noreferrer');
                   }
                 }}
                 className="flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
@@ -164,13 +194,15 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
 
               {/* Website Button - always shows */}
               <button 
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   if (venue.website) {
                     window.open(venue.website, '_blank', 'noopener,noreferrer');
                   } else {
                     // Fallback: search for venue website
                     const searchQuery = `${venue.name} ${venue.city} official website`;
-                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank');
+                    window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, '_blank', 'noopener,noreferrer');
                   }
                 }}
                 className="flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
@@ -181,19 +213,17 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
 
               {/* Map Button - always shows */}
               <button 
-                onClick={() => {
-                  console.log('View on Map button clicked for:', venue.name);
-                  console.log('Venue coordinates:', venue.lat, venue.lon);
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   if (venue.lat && venue.lon) {
                     const mapUrl = `https://www.google.com/maps?q=${venue.lat},${venue.lon}`;
-                    console.log('Opening map with coordinates:', mapUrl);
                     window.open(mapUrl, '_blank', 'noopener,noreferrer');
                   } else {
                     // Fallback: search for venue location
                     const searchQuery = `${venue.name} ${venue.city} location`;
                     const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
-                    console.log('Opening map search:', searchUrl);
-                    window.open(searchUrl, '_blank');
+                    window.open(searchUrl, '_blank', 'noopener,noreferrer');
                   }
                 }}
                 className="flex items-center justify-center space-x-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors"
@@ -204,11 +234,11 @@ export default function VenueModal({ venue, isOpen, onClose }: VenueModalProps) 
 
               {/* Contact Button - always shows */}
               <button 
-                onClick={() => {
-                  console.log('Contact Venue button clicked for:', venue.name);
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   const emailSubject = `Booking Inquiry - ${venue.name}`;
                   const emailBody = `Hello,\n\nI am interested in booking ${venue.name} for a music performance.\n\nVenue Details:\n- Name: ${venue.name}\n- City: ${venue.city}\n- Capacity: ${venue.capacity ? venue.capacity.toLocaleString() : 'Various'}\n- Venue Type: ${venue.venueType}\n\nPlease contact me to discuss availability and pricing.\n\nThank you!`;
-                  console.log('Opening email with subject:', emailSubject);
                   window.open(`mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`);
                 }}
                 className="flex items-center justify-center space-x-2 bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors"
